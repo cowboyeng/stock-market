@@ -38,10 +38,10 @@ def get_yahoo_finance_data(reload_sp500=False):
     if not os.path.exists('stock_dfs'):
         os.makedirs('stock_dfs')
 
-    start = dt.datetime(2010, 1, 1)
-    end = dt.datetime(2018, 1, 1)
+    start = dt.datetime(2017, 12, 1)
+    end = dt.datetime.now()
 
-    for ticker in tickers:
+    for ticker in tickers[:14]:
         time.sleep(2.0)
         if not os.path.exists('stock_dfs/{}.csv'.format(ticker)):
             df = web.DataReader(ticker, 'yahoo', start, end)
@@ -55,7 +55,7 @@ def compile_data():
         tickers = pickle.load(f)
 
         main_df = pd.DataFrame()
-        for ticker in tickers[:10]:
+        for ticker in tickers[:14]:
             df = pd.read_csv('stock_dfs/{}.csv'.format(ticker))
             df.set_index('Date', inplace=True)
             df.rename(columns={'Adj Close': ticker}, inplace=True)
@@ -66,7 +66,6 @@ def compile_data():
             else:
                 main_df = main_df.join(df, how='outer')
 
-        print(main_df.head())
         main_df.to_csv('sp500_joined_adj_closes.csv')
 
 
@@ -92,7 +91,6 @@ def visualize_data():
     # plt.savefig("coorelations.png, dpi = (300))
     plt.show()
 
-
-# get_yahoo_finance_data()
-# compile_data()
-visualize_data()
+get_yahoo_finance_data(True)
+compile_data()
+# visualize_data()
